@@ -31,8 +31,8 @@ const GenerateBarcode = () => {
                     <div className="flex flex-col w-full md:w-2/5 gap-2">
                         <h1 className='font-medium text-xl'>Actions</h1>
                         <div className="flex gap-5 items-center justify-center">
-                            <button className='bg-indigo-700 w-1/2 text-white p-2 transition-all hover:bg-indigo-800 rounded-md text-lg hover:font-semibold' onClick={() => createBarcode()}>Generate Barcode</button>
-                            <button className='bg-white-700 border-2 w-1/2 p-2 rounded-md text-lg transition-all hover:bg-gray-100 hover:font-semibold' onClick={() => setBarcode('')}>Clear Barcode</button>
+                            <button className='bg-indigo-700 w-1/2 text-white p-2 transition-all hover:bg-indigo-800 rounded-md text-lg' onClick={() => createBarcode()}>Generate Barcode</button>
+                            <button className='bg-white-700 border-2 w-1/2 p-2 rounded-md text-lg transition-all hover:bg-gray-100' onClick={() => setBarcode('')}>Clear Barcode</button>
                         </div>
                     </div>
                 </div>
