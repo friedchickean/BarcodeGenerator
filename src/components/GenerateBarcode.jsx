@@ -1,15 +1,17 @@
 import React, { useState, useRef } from 'react';
 import Barcode from 'react-barcode';
-import { FaPrint } from "react-icons/fa";
+import { FaPrint, FaCopy } from "react-icons/fa";
 import ReactToPrint from 'react-to-print';
 import jsPDF from 'jspdf';
 import JsBarcode from 'jsbarcode';
+import { toBlob } from 'html-to-image';
 
 const GenerateBarcode = () => {
     const [barcode, setBarcode] = useState('')
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const componentRef = useRef();  // Create a reference
     const [numOfBarcodes, setNumOfBarcodes] = useState(30); // Number of barcodes to generate
+    const [copied, setCopied] = useState(false); // State to track if the barcode image was copied to clipboard
 
     const createBarcode = () => {
         let trackingNumber = 'BH';
@@ -17,6 +19,7 @@ const GenerateBarcode = () => {
             trackingNumber += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         setBarcode(trackingNumber);
+        setCopied(false);
     }
 
     const getTrackingNumber = () => {
@@ -26,6 +29,23 @@ const GenerateBarcode = () => {
         }
         return trackingNumber;
     }
+
+    const copyBarcodeImage = () => {
+        const node = componentRef.current;
+
+        toBlob(node, { backgroundColor: 'white', style: { transform: '', transformOrigin: 'top left' }, imagePlaceholder: '', cacheBust: true, pixelRatio: 1 })
+            .then(function (blob) {
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+                setCopied(true);
+            })
+            .catch(function (error) {
+                console.error('Error copying image to clipboard:', error);
+            });
+    };
 
     const generateAvery5160 = (type) => {
         // Create a new instance of jsPDF
@@ -115,10 +135,15 @@ const GenerateBarcode = () => {
                                     </div>
                                 </>) : <span>No barcode</span>}
                             </div>
-                            <ReactToPrint
-                                trigger={() => <button className='border-indigo-700 transition-all hover:bg-indigo-700 hover:text-white border-2 p-2 rounded-md w mt-5 flex items-center gap-2'>Print Barcode <FaPrint /></button>}
-                                content={() => componentRef.current}
-                            />
+                            <div className="flex items-end gap-5 justify-center">
+                                <button className={`${copied ? 'border-green-800 hover:bg-green-100 bg-green-100 text-green-700' : 'border-indigo-700 hover:bg-indigo-300'} transition-all border-2 p-2 rounded-md min-w-36 mt-3 flex items-center justify-between gap-2 `} onClick={copyBarcodeImage}>
+                                    {copied ? 'Copied!' : 'Copy Barcode'} <FaCopy />
+                                </button>
+                                <ReactToPrint
+                                    trigger={() => <button className='bg-indigo-700 transition-all hover:bg-indigo-800 text-white border-2 border-indigo-700 hover:border-indigo-800 p-2 rounded-md w mt-5 flex items-center gap-2'>Print Barcode <FaPrint /></button>}
+                                    content={() => componentRef.current}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
